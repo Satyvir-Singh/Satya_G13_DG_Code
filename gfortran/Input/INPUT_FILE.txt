@@ -1,0 +1,35 @@
+!*************************************************************************!
+!**********          DISCONTINUOUS GALERKIN SOLVER                ********!        
+!******                   1D R13 EQUATIONS                         ******!
+!*************************************************************************!
+
+!############################ COMPUTATIONAL DOMAIN INFROMATION 
+NUMBER OF ELEMENT (X-SPACE)          : 500
+X_MIN VLAUE                          : -3.0
+X_MAX VALUE                          :  3.0
+
+!############################ EQUATION INFROMATION
+GOVERNING EQUATION                   : EULER           ! EULER - NSF - NF
+PROBLEM TYPE                         : SOD_SHOCK_TUBE  ! SOD_SHOCK_TUBE - 
+
+!############################ SOLVER INFROMATION
+ORDER OF ACCURACY(P)                 : 2           ! [0,5 ]
+MAXIMUM QUADRATURE POINTS            : 3           ! [0,24]   
+
+!############################ STABILITY INFROMATION
+CFL NUMBER                           : 0.01
+MAX ERROR                            : 1.0E-08
+FINAL TIME                           : 1.0
+PRINT STEP(SOLUTION)                 : 1000
+TEMPORAL SCHEME                      : TVD_3RD       ! FORWARD_EULER - TVD_3RD                                              
+INVISCID NUMERICAL FLUX              : RUSANOV       ! LAX - RUSANOV
+POSITIVITY LIMITER                   : ENABLE        ! ENABLE - DISABLE
+
+!############################ GAS PROPERTIES
+GAMMA                                : 1.667          ! 1.4 , 1.667
+GAS CONSTANT(R)                      : 287.24         ! 287.24 - Air,   Argon - 208.24
+PRODUCTION VALUE(B)                  : 25.0         ! 0.0, 2.5. 25.0, 125.0
+
+
+
+                              

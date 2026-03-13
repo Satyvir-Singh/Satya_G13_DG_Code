@@ -1,0 +1,66 @@
+!*********************************************************!
+!*****        DISCONTINUOUS GALERKIN SOLVER       ********!
+!*****                  FOR                        *******!
+!*****             1D EULER EQUATION                  ****!
+!*****                 *******                     *******!
+!*****         DEVELOPER:   SATYVIR SINGH          *******!
+!*********************************************************!
+    
+FUNCTION Uh(COFFICIENT,BFUNCTION,N_BF)
+IMPLICIT NONE
+INTEGER :: BF,N_BF
+DOUBLE PRECISION ::Uh
+DOUBLE PRECISION,INTENT(IN) :: COFFICIENT(N_BF)
+DOUBLE PRECISION,INTENT(IN) :: BFUNCTION(N_BF)
+
+Uh =0.d0
+DO BF = 1,N_BF
+  Uh = Uh + COFFICIENT(BF)*BFUNCTION(BF)
+END DO
+
+RETURN
+    
+END FUNCTION 
+    
+    
+!======================================================================  
+SUBROUTINE DG_DOF_Uh_FULL(JACOBIAN_VAL,Uh_INSIDE,BF_VAL,WEIGHT,NUM_Q1,DOF)
+USE VARIABLES_INFO
+IMPLICIT NONE
+INTEGER,INTENT(IN) :: NUM_Q1
+DOUBLE PRECISION,INTENT(IN) :: JACOBIAN_VAL
+DOUBLE PRECISION,INTENT(IN) :: Uh_INSIDE(NUM_Q1)
+DOUBLE PRECISION,INTENT(IN) :: WEIGHT(NUM_Q1)
+DOUBLE PRECISION,INTENT(IN) :: BF_VAL(MAX_BASIS,NUM_Q1)
+DOUBLE PRECISION,INTENT(OUT) :: DOF(MAX_BASIS)
+
+INTEGER :: BF, N, I, J
+INTEGER :: VP1
+DOUBLE PRECISION :: INTEGRATION_UhBi_dv(MAX_BASIS)
+DOUBLE PRECISION :: INV_MASS(MAX_BASIS,MAX_BASIS)
+
+!*** RESET THE VALUES
+INTEGRATION_UhBi_dv(:) =0.d0
+
+!****** CALCULATE THE VALUE OF Bj.Uh(x,y,t) at each basis 
+DO BF = 1,MAX_BASIS
+DO VP1 = 1,NUM_Q1
+    
+ INTEGRATION_UhBi_dv(BF) = INTEGRATION_UhBi_dv(BF) + WEIGHT(VP1)*Uh_INSIDE(VP1)*BF_VAL(BF,VP1)*JACOBIAN_VAL
+ 
+END DO  !---> VP1
+END DO  !--->BASIS 
+
+!******* CALCULATE THE INVERSE OF MASS MATRIX
+DO J = 1,MAX_BASIS
+DO I = 1,MAX_BASIS
+  INV_MASS(I,J) = INTEGRAL_BiBj_INVERSE(I,J)
+END DO
+END DO
+
+!**** CALCULATE DOFS
+ DO BF=1,MAX_BASIS
+   DOF(BF) = INV_MASS(BF,BF)*INTEGRATION_UhBi_dv(BF)
+ END DO
+
+END SUBROUTINE  
